@@ -1,0 +1,42 @@
+import keyboard as kb
+import pyautogui as pgui
+import pandas as pd
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
+
+def msg(t1,t2):
+    """Displays a message box with title t1 and content t2"""
+    root = tk.Tk()
+    root.withdraw()
+    messagebox.showinfo(t1,t2)
+
+def readwrite():
+    """Opens a dialog to locate the file for import then writes information to the selected window."""
+    path = filedialog.askopenfilename()
+    df = pd.read_excel(path)
+    rowcount = df.shape[0]
+    msg("Instructions","Now, tab to Engagement, hover your mouse over the first input cell, and press G on your keyboard to begin. Press H to cancel.")
+    while path is not None:
+        try:
+            if kb.is_pressed('g'):
+                pgui.click()
+                for rownum in range(rowcount):
+                    pgui.typewrite(str(df.iloc[rownum,0]))
+                    pgui.press(['tab', 'tab'])
+                    pgui.typewrite(str(df.iloc[rownum,2]))
+                    pgui.press('tab')
+                    pgui.typewrite(str(df.iloc[rownum,3]))
+                    pgui.press('tab')
+                msg("Note","Task complete!")
+                break
+            elif kb.is_pressed('h'):
+                msg("Note","Task cancelled.")
+                break
+            else:
+                pass
+        except:
+            break
+
+msg("Instructions","Select your Excel file with the entry in four-column format with the first row (A1:A4) being headers.")
+readwrite()
